@@ -1,0 +1,156 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <script src="/static/js/my.js"></script>
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">时间</a>
+                <a href="">时间戳</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>时间戳转换</h2>
+                    <div class="layui-form-item">
+                        <div class="layui-form">
+                            <input type="radio" name="time_type" value="1" title="秒" checked>
+                            <input type="radio" name="time_type" value="2" title="毫秒">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-group">
+                            <div class="layui-input-split layui-input-prefix">
+                                当前时间
+                            </div>
+                            <input type="text" id="time_now" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-group">
+                            <div class="layui-input-split layui-input-prefix">
+                                当前时间戳
+                            </div>
+                            <input type="text" id="timestamp_now" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-group">
+                            <div class="layui-input-prefix">
+                                时间转时间戳
+                            </div>
+                            <input type="text" class="layui-input" id="date_1">
+                            <div class="layui-input-suffix">
+                                <button class="layui-btn layui-btn-primary" id="chage_1">转换</button>
+                            </div>
+                            <input type="text" id="datestamp_1" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-input-group">
+                            <div class="layui-input-prefix">
+                                时间戳转时间
+                            </div>
+                            <input type="text" id="datestamp_2" class="layui-input">
+                            <div class="layui-input-suffix">
+                                <button class="layui-btn layui-btn-primary" id="chage_2">转换</button>
+                            </div>
+                            <input type="text" id="date_2" class="layui-input">
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        layui.use('form', function () {
+            var form = layui.form;
+            $ = layui.$;
+            laydate = layui.laydate;
+            layer = layui.layer;
+
+           
+
+            // 更新
+            function refresh() {
+                // 更新时间戳
+                var value = $('input[name="time_type"]:checked').val();
+                if (value == 1) {
+                    var timeStamp = Math.floor(new Date().getTime() / 1000);
+                } else {
+                    var timeStamp = new Date().getTime();
+                };
+                $('#timestamp_now').val(timeStamp);
+
+                // 时间
+                $("#time_now").val(format_time(''));
+            };
+            // 每秒执行一次
+            refresh()
+            setInterval(refresh, 1000);
+
+
+            // 时间转时间戳
+            $("#chage_1").click(function () {
+                var date2datestamp = new Date($('#date_1').val()).getTime();
+                if ($('#date_1').val() == ""){
+                    layer.alert("先填写时间")
+                    return false
+                };
+                var value = $('input[name="time_type"]:checked').val();
+                if (value == 1) {
+                    $("#datestamp_1").val(Math.floor(date2datestamp / 1000));
+                } else {
+                    $("#datestamp_1").val(date2datestamp);
+                };
+            });
+
+            // 时间戳转时间
+            $("#chage_2").click(function () {
+                var datestamp2date = $('#datestamp_2').val();
+                if (datestamp2date == ""){
+                    layer.alert("先填写时间戳")
+                    return false
+                };
+                var value = $('input[name="time_type"]:checked').val();
+                if (value == 1) {
+                    datestamp_2 = datestamp2date * 1000;
+                } else {
+                    datestamp_2 = datestamp2date * 1;
+                }
+                $("#date_2").val(format_time(datestamp_2));
+            });
+
+            laydate.render({
+                elem: '#date_1',
+                type: 'datetime',
+                fullPanel: true
+            });
+
+        });
+    </script>
+</body>
+
+</html>

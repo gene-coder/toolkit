@@ -1,0 +1,131 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <script src="/static/sortable-v1.9.0/Sortable.js"></script>
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+    <style>
+        .img_uplaod {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">文档</a>
+                <a href="">pdf截取</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>pdf截取</h2>
+
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: auto;">选择截取范围</label>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="pdf_min" lay-verify="required" id="pdf_min"
+                                        autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid">-</div>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="pdf_max" lay-verify="required" id="pdf_max"
+                                        autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="layui-upload-div">
+                        <div class="layui-upload-drag" style="display: block;" id="upload_file">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            <div>点击上传，或将文件拖拽到此处</div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="layui-btn layui-btn-normal" id="upload-action">上传截取</button>
+                    <div>
+                        <button type="button" id="download" data-url="" class="layui-btn layui-btn-fluid">下载</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        layui.use(function () {
+            var upload = layui.upload;
+            var $ = layui.$;
+            var laytpl = layui.laytpl;
+
+
+            $("#download").hide();
+            upload.render({
+                elem: '#upload_file',
+                url: '/toolkit/pdf_intercept/upload',
+                accept: 'file',
+                multiple: false,
+                exts: 'pdf',
+                auto: false,
+                bindAction: '#upload-action',
+                requestAll: true,
+                data: {
+                    pdf_min: function () {
+
+                        return $("#pdf_min").val();
+
+                    },
+                    pdf_max: function () {
+
+                        return $("#pdf_max").val();
+                    }
+                },
+                done: function (res) {
+                    layer.alert(res.filename + '，共' + res.page_number + '页<br/>截取' + res.intercept + '页，请点击下方下载按钮');
+                    $("#download").text("下载" + res.filename);
+                    $("#download").attr("data-url", "/toolkit/pdf_intercept/download/" + res.filename);
+                    $("#download").show();
+                },
+                before: function (obj) {
+                    // 判断是否填写
+                    pattern = /\d+/;
+                    if (!pattern.test($("#pdf_min").val()) || !pattern.test($("#pdf_max").val()) || $("#pdf_min").val() > $("#pdf_max").val()) {
+                        layer.alert("表单错误，<br/>需要填写开始或结束页面,而且必须是数字，开始页面要小于结束页面")
+                        return false
+                    };
+                    layer.msg('处理中，请稍后...', { icon: 16, shade: 0.01, time: 0 });
+                }
+            });
+
+            $('#download').on('click', function () {
+                url = $("#download").attr("data-url");
+                window.open(url);
+            });
+
+            Sortable.create(document.getElementById('upload-preview'), {
+                animation: 150
+            });
+
+        });
+    </script>
+</body>
+
+</html>

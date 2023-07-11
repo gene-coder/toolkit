@@ -1,0 +1,167 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <script src="/static/sortable-v1.9.0/Sortable.js"></script>
+    <script src="/static/js/my.js"></script>
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+    <style>
+        .img_uplaod {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">文档</a>
+                <a href="">图片拼接</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>图片拼接</h2>
+
+
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: auto;">填写每行几张图片</label>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="pic_num" lay-verify="required" id="pic_num"
+                                        autocomplete="off" class="layui-input" value=3 >
+                                </div>
+                                <div class="layui-form-mid layui-text-em">所有图片尺寸修改为第一张大小</div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <div id="layui-upload-div">
+                        <div class="layui-upload-drag" style="display: block;" id="upload_file">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            <div>点击上传，或将文件拖拽到此处</div>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap;" class="layui-upload-list" id="upload-preview">
+                        </div>
+                    </div>
+
+                    <button type="button" class="layui-btn layui-btn-normal" id="upload-action">合并图片</button>
+                    <div>
+                        <button type="button" id="download" data-url="" class="layui-btn layui-btn-fluid">下载</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="file-item">
+        {% raw %}
+        <div class="img_div">
+          <img src="{{d.src}}" style="width: 100px;height: 80px;" class="layui-upload-img img">
+          <p>{{d.filename}} </p>
+          <button type="button" class="layui-btn layui-btn-primary layui-btn-xs img_del_btn">删除</button>
+        </div>
+        {% endraw %}
+      </script>
+
+    <script>
+
+        layui.use(function () {
+            var upload = layui.upload;
+            var $ = layui.$;
+            var laytpl = layui.laytpl;
+
+            $("#download").hide();
+            uuid = generateUUID();
+
+
+            upload.render({
+                elem: '#upload_file',
+                url: '/toolkit/pic_merge/upload',
+                accept: 'images',
+                multiple: true,
+                auto: false,
+                bindAction: '#upload-action',
+                requestAll: true,
+                data: {
+                    uuid: function () {
+                        return uuid;
+                    }
+                },
+                choose: function (obj) {
+                    obj.preview(function (index, file, result) {
+                        var fileList = $('#upload-preview');
+                        laytpl($('#file-item').html()).render({ src: result, filename: file.name }, function (html) {
+                            fileList.append(html);
+                        });
+                    });
+                },
+                before: function (obj) {
+                    pattern =  /^[1-9]\d*$/;
+                    if (!pattern.test($("#pic_num").val()) ) {
+                        layer.alert("表单错误，<br/>每行需要必须是正整数")
+                        return false
+                    };
+                    layer.msg('处理中，请稍后...', { icon: 16, shade: 0.01, time: 0 });
+                },
+                allDone: function (res) {
+                    var file_names = []
+                    $('#upload-preview').find('p').each(function () {
+                        var pContent = $(this).text();
+                        file_names.push(pContent)
+                    });
+                    pic_num = $("#pic_num").val()
+                    
+                    
+                    $.post("/toolkit/pic_merge/merge",
+                        {
+                            uuid: uuid,
+                            file_order: file_names.join(),
+                            row_num: pic_num
+                        },
+                        function (data, status) {
+                            layer.alert("文件已经生成请点击下载");
+                            $("#download").text("下载   ");
+                            $("#download").attr("data-url", "/toolkit/pic_merge/download/" + data.uuid);
+                            $("#download").show();
+                        });
+
+                }
+            });
+
+            // 上传
+            $('body').on('click', '.img_del_btn', function () {
+                var imgDiv = $(this).closest('.img_div');
+                imgDiv.remove();
+            });
+
+
+            $('#download').on('click', function () {
+                url = $("#download").attr("data-url");
+                // window.location.href = url;
+                window.open(url);
+            });
+
+            Sortable.create(document.getElementById('upload-preview'), {
+                animation: 150
+            });
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,470 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <link rel="stylesheet" href="/static/cropper-v3.1.6/cropper.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <script src="/static/jquery-v3.4.1/jquery-3.4.1.min.js"></script>
+    <script src="/static/cropper-v3.1.6/cropper.js"></script>
+
+
+    <style>
+        .img_uplaod {
+            width: 100px;
+            height: 100px;
+        }
+
+        /* input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn::before {
+            content: '\f093';
+            font-family: 'Font Awesome 5 Free';
+            margin-right: 8px;
+        } */
+    </style>
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">文档</a>
+                <a href="">图片裁剪</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>图片裁剪</h2>
+                    <div class="layui-row">
+                        <div class="layui-col-xs8">
+                            <div class="layui-upload-list">
+                                <img id="id-img" src="/static/img/toolkit.png" style="height: 200px;; max-width: 100%;">
+                            </div>
+
+                            <div class="docs-buttons" style="display: flex;justify-content: space-between;">
+                                <div class="layui-btn-group" style="text-align: left;">
+                                    <label class="layui-btn" for="inputImage"> 上传</label>
+                                    <input type="file" id="inputImage" name="file" style="display: none;"
+                                        accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff">
+                                    <button type="button" class="layui-btn" data-method="reset" title="Reset">
+                                        重置
+                                    </button>
+                                   
+                                </div>
+
+                                <div class="layui-btn-group" style="text-align: right;">
+                                    <button type="button" class="layui-btn" data-method="getCroppedCanvas"
+                                        data-option="{ &quot;width&quot;:  413 , &quot;height&quot;: 288  }">
+                                        预览下载
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="docs-buttons">
+
+                                <br>
+                                <div class="layui-btn-group">
+                                    <button type="button" class="layui-btn" data-method="zoom"
+                                        data-option="0.1">放大</button>
+                                    <button type="button" class="layui-btn" data-method="zoom"
+                                        data-option="-0.1">缩小</button>
+                                </div>
+
+                                <div class="layui-btn-group">
+                                    <button type="button" class="layui-btn" data-method="move" data-option="-10"
+                                        data-second-option="0">
+                                        <i class="layui-icon layui-icon-left"></i>
+                                    </button>
+                                    <button type="button" class="layui-btn" data-method="move" data-option="10"
+                                        data-second-option="0">
+                                        <i class="layui-icon layui-icon-right"></i>
+                                    </button>
+                                    <button type="button" class="layui-btn" data-method="move" data-option="0"
+                                        data-second-option="-10">
+                                        <i class="layui-icon layui-icon-up"></i>
+                                    </button>
+                                    <button type="button" class="layui-btn" data-method="move" data-option="0"
+                                        data-second-option="10">
+                                        <i class="layui-icon layui-icon-down"></i>
+                                    </button>
+                                </div>
+
+                                <div class="layui-btn-group">
+                                    <button type="button" class="layui-btn" data-method="rotate" data-option="-45">
+                                        左转
+                                    </button>
+                                    <button type="button" class="layui-btn" data-method="rotate" data-option="45">
+                                        右转
+                                    </button>
+                                </div>
+
+                                <div class="layui-btn-group">
+                                    <button type="button" class="layui-btn" data-method="scaleX" data-option="-1">
+                                        上下变换
+                                    </button>
+                                    <button type="button" class="layui-btn" data-method="scaleY" data-option="-1">
+                                        左右变换
+                                    </button>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="layui-col-xs4">
+                            <div class="layui-row">
+                                <div class="docs-preview clearfix"
+                                    style="display: flex;align-items: center;justify-content: center;">
+                                    <div class="img-preview"
+                                        style="width: 256px; height: 144px;overflow: hidden;border: 1px solid #000;">
+                                    </div>
+                                </div>
+
+                                <div class="docs-data">
+                                    <div class="layui-form layui-form-pane ">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label" style="width: 70px;">位置</label>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataX" class="layui-input">
+                                            </div>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataY" class="layui-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label" style="width: 70px;">宽高</label>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataWidth" class="layui-input">
+                                            </div>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataHeight" class="layui-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label" style="width: 70px;">翻转X</label>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataScaleX" class="layui-input">
+                                            </div>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataScaleY" class="layui-input">
+                                            </div>
+
+                                        </div>
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label" style="width: 70px;">旋转</label>
+                                            <div class="layui-input-inline layui-input-wrap" style="width: 100px;">
+                                                <input type="text" name="password" id="dataRotate" class="layui-input">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="docs-toggles">
+                                    <div class="layui-form ">
+                                        <input type="radio" class="sr-only" id="aspectRatio0"
+                                            lay-filter="demo-radio-filter" name="aspectRatio" value="1.777" title="16:9"
+                                            checked>
+                                        <input type="radio" class="sr-only" id="aspectRatio2"
+                                            lay-filter="demo-radio-filter" name="aspectRatio" value="1" title="1:1">
+                                        <input type="radio" class="sr-only" id="aspectRatio2"
+                                            lay-filter="demo-radio-filter" name="aspectRatio" value="0.7143"
+                                            title="证件照5:7">
+                                        <input type="radio" class="sr-only" id="aspectRatio3"
+                                            lay-filter="demo-radio-filter" name="aspectRatio" value="0.666" title="2:3">
+                                        <input type="radio" class="sr-only" id="aspectRatio4"
+                                            lay-filter="demo-radio-filter" name="aspectRatio" value="NaN" title="Free">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+
+        $(function () {
+
+            'use strict';
+
+            var console = window.console || { log: function () { } };
+            var URL = window.URL || window.webkitURL;
+            var $image = $('#id-img');
+            // var $download = $('#download');
+            var $dataX = $('#dataX');
+            var $dataY = $('#dataY');
+            var $dataHeight = $('#dataHeight');
+            var $dataWidth = $('#dataWidth');
+            var $dataRotate = $('#dataRotate');
+            var $dataScaleX = $('#dataScaleX');
+            var $dataScaleY = $('#dataScaleY');
+            var options = {
+                aspectRatio: 16 / 9,
+                preview: '.img-preview',
+                crop: function (e) {
+                    $dataX.val(Math.round(e.x) + "px");
+                    $dataY.val(Math.round(e.y) + "px");
+                    $dataHeight.val(Math.round(e.height) + "px");
+                    $dataWidth.val(Math.round(e.width) + "px");
+                    $dataRotate.val(e.rotate + "°");
+                    $dataScaleX.val(e.scaleX + "°");
+                    $dataScaleY.val(e.scaleY + "°");
+                }
+            };
+            var originalImageURL = $image.attr('src');
+            var uploadedImageName = 'cropped.jpg';
+            var uploadedImageType = 'image/jpeg';
+            var uploadedImageURL;
+
+
+
+
+            // Cropper
+            $image.on({}).cropper(options);
+
+
+            // Buttons
+            if (!$.isFunction(document.createElement('canvas').getContext)) {
+                $('button[data-method="getCroppedCanvas"]').prop('disabled', true);
+            }
+
+            if (typeof document.createElement('cropper').style.transition === 'undefined') {
+                $('button[data-method="rotate"]').prop('disabled', true);
+                $('button[data-method="scale"]').prop('disabled', true);
+            }
+
+
+            // Options
+            layui.use(function () {
+                var form = layui.form;
+                form.on('radio(demo-radio-filter)', function (data) {
+                    var $this = $(this);
+                    var name = $this.attr('name');
+                    var type = $this.prop('type');
+                    var cropBoxData;
+                    var canvasData;
+                    if (!$image.data('cropper')) {
+                        return;
+                    }
+                    if (type === 'checkbox') {
+                        options[name] = $this.prop('checked');
+                        cropBoxData = $image.cropper('getCropBoxData');
+                        canvasData = $image.cropper('getCanvasData');
+
+                        options.ready = function () {
+                            $image.cropper('setCropBoxData', cropBoxData);
+                            $image.cropper('setCanvasData', canvasData);
+                        };
+                    } else if (type === 'radio') {
+                        options[name] = $this.val();
+                    }
+
+                    $image.cropper('destroy').cropper(options);
+                });
+            });
+
+
+            // Methods
+            $('.docs-buttons').on('click', '[data-method]', function () {
+                var $this = $(this);
+                var data = $this.data();
+                var cropper = $image.data('cropper');
+                var cropped;
+                var $target;
+                var result;
+
+                if ($this.prop('disabled') || $this.hasClass('disabled')) {
+                    return;
+                }
+
+                if (cropper && data.method) {
+                    data = $.extend({}, data); // Clone a new one
+
+                    if (typeof data.target !== 'undefined') {
+                        $target = $(data.target);
+
+                        if (typeof data.option === 'undefined') {
+                            try {
+                                data.option = JSON.parse($target.val());
+                            } catch (e) {
+                                console.log(e.message);
+                            }
+                        }
+                    }
+
+                    cropped = cropper.cropped;
+
+                    switch (data.method) {
+                        case 'rotate':
+                            if (cropped && options.viewMode > 0) {
+                                $image.cropper('clear');
+                            }
+
+                            break;
+
+                        case 'getCroppedCanvas':
+                            if (uploadedImageType === 'image/jpeg') {
+                                if (!data.option) {
+                                    data.option = {};
+                                }
+
+                                data.option.fillColor = '#fff';
+                            }
+
+                            break;
+                    }
+
+                    result = $image.cropper(data.method, data.option, data.secondOption);
+
+                    switch (data.method) {
+                        case 'rotate':
+                            if (cropped && options.viewMode > 0) {
+                                $image.cropper('crop');
+                            }
+
+                            break;
+
+                        case 'scaleX':
+                        case 'scaleY':
+                            $(this).data('option', -data.option);
+                            break;
+
+                        case 'getCroppedCanvas':
+                            if (result) {
+                                
+
+
+                                $('#img-download').attr('src', result.toDataURL(uploadedImageType))
+                                layer.open({
+                                    type: 1,
+                                    title: '图片',
+                                    shadeClose: true,
+                                    closeBtn: 0,
+                                    area: ['350px', '400px'],
+                                    content: $('#form-download')
+                                });
+                                $image.attr('href', result.toDataURL(uploadedImageType));
+
+                            }
+
+                            break;
+
+                        case 'destroy':
+                            if (uploadedImageURL) {
+                                URL.revokeObjectURL(uploadedImageURL);
+                                uploadedImageURL = '';
+                                $image.attr('src', originalImageURL);
+                            }
+
+                            break;
+                    }
+
+                    if ($.isPlainObject(result) && $target) {
+                        try {
+                            $target.val(JSON.stringify(result));
+                        } catch (e) {
+                            console.log(e.message);
+                        }
+                    }
+
+                }
+            });
+
+
+
+            // Import image
+            var $inputImage = $('#inputImage');
+
+            if (URL) {
+                $inputImage.change(function () {
+                    var files = this.files;
+                    var file;
+
+                    if (!$image.data('cropper')) {
+                        return;
+                    }
+
+                    if (files && files.length) {
+                        file = files[0];
+
+                        if (/^image\/\w+$/.test(file.type)) {
+                            uploadedImageName = file.name;
+                            uploadedImageType = file.type;
+
+                            if (uploadedImageURL) {
+                                URL.revokeObjectURL(uploadedImageURL);
+                            }
+
+                            uploadedImageURL = URL.createObjectURL(file);
+                            $image.cropper('destroy').attr('src', uploadedImageURL).cropper(options);
+                            $inputImage.val('');
+                        } else {
+                            window.alert('Please choose an image file.');
+                        }
+                    }
+                });
+            } else {
+                $inputImage.prop('disabled', true).parent().addClass('disabled');
+            }
+
+        });
+
+        layui.use(['layer'], function () {
+            var $ = layui.jquery
+            // 下载
+            $('#downloadBtn').on('click', function () {
+                var base64Url = $('#img-download').attr('src');
+                var aLink = document.createElement('a');
+                aLink.href = base64Url;
+                aLink.download = 'image.png';
+                document.body.appendChild(aLink);
+                aLink.click();
+                document.body.removeChild(aLink);
+            });
+
+            // 取消
+            $('#cancelBtn').on('click', function () {
+                layer.closeAll();
+                $('#form-download').hide();
+            });
+        });
+
+    </script>
+
+</body>
+
+<div id="form-download" style=" text-align:center;display: none">
+    <img src="" id="img-download" style="width:50%;height:auto;border: 1px solid #000;" />
+    <div>
+        <button class="layui-btn layui-btn-normal" id="downloadBtn">下载</button>
+        <button class="layui-btn layui-btn-primary" id="cancelBtn">取消</button>
+    </div>
+</div>
+
+</html>

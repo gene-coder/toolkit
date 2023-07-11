@@ -1,0 +1,168 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+    <style>
+        .img_uplaod {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">文档</a>
+                <a href="">pdf截取</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>pdf截取</h2>
+
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: auto;">添加页面范围</label>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="pdf_min" id="pdf_min" value=1 autocomplete="off"
+                                        class="layui-input">
+                                </div>
+                                <div class="layui-form-mid">-</div>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="pdf_max" id="pdf_max" value=100 autocomplete="off"
+                                        class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">开始页码</label>
+                            <div class="layui-input-inline layui-input-wrap">
+                                <input type="text" name="startnumber" id="startnumber" value=1 autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">页码位置</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="position" value="0" title="左上角">
+                                <input type="radio" name="position" value="1" title="上方中间">
+                                <input type="radio" name="position" value="2" title="右上角">
+                                <input type="radio" name="position" value="3" title="左下角">
+                                <input type="radio" name="position" value="4" title="下方中间">
+                                <input type="radio" name="position" value="5" title="右下角" checked>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">页码格式</label>
+                            <div class="layui-input-inline">
+                                <select name="format" id="format">
+                                    <option value="0">{n}</option>
+                                    <option value="1" >-{n}-</option>
+                                    <option value="2">第{n}页</option>
+                                    <option value="3">{n}/{p}</option>
+                                    <option value="4" selected>第{n}页/共{p}页</option>
+                                </select>
+                            </div>
+                            <div class="layui-form-mid layui-text-em">{n}代表当前页，{p}代表总页数</div>
+                        </div>
+                    </form>
+
+                    <div id="layui-upload-div">
+                        <div class="layui-upload-drag" style="display: block;" id="upload_file">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            <div>点击上传，或将文件拖拽到此处</div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="layui-btn layui-btn-normal" id="upload-action">上传截取</button>
+                    <div>
+                        <button type="button" id="download" data-url="" class="layui-btn layui-btn-fluid">下载</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        layui.use(function () {
+            var upload = layui.upload;
+            var $ = layui.$;
+            var laytpl = layui.laytpl;
+
+
+            $("#download").hide();
+            upload.render({
+                elem: '#upload_file',
+                url: '/toolkit/pdf_add_pagenumber/upload',
+                accept: 'file',
+                multiple: false,
+                exts: 'pdf',
+                auto: false,
+                bindAction: '#upload-action',
+                requestAll: true,
+                data: {
+                    pdf_min: function () {
+                        return $("#pdf_min").val();
+
+                    },
+                    pdf_max: function () {
+                        return $("#pdf_max").val();
+                    },
+                    startnumber: function () {
+                        return $("#startnumber").val();
+                    },
+                    position: function () {
+                        return $('input[name="position"]:checked').val() ;
+                    },
+                    format: function () {
+                        return $("#format").val();
+                    }
+                },
+                done: function (res) {
+                    layer.alert(res.filename + '，共' + res.page_number + '页,请点击下方下载按钮');
+                    console.log(res)
+                    $("#download").text("下载" + res.filename);
+                    $("#download").attr("data-url", "/toolkit/pdf_add_pagenumber/download/" + res.filename);
+                    $("#download").show();
+                },
+                before: function (obj) {
+                    // 判断是否填写
+                    pattern = /\d+/;
+                    if (!pattern.test($("#startnumber").val()) || !pattern.test($("#pdf_min").val()) || !pattern.test($("#pdf_max").val()) || $("#pdf_min").val() > $("#pdf_max").val()) {
+                        layer.alert("表单错误，<br/>需要填写开始或结束页面,而且必须是数字，开始页面要小于结束页面")
+                        return false
+                    };
+                    layer.msg('处理中，请稍后...', { icon: 16, shade: 0.01, time: 0 });
+                }
+            });
+
+            $('#download').on('click', function () {
+                url = $("#download").attr("data-url");
+                window.open(url);
+            });
+
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <script src="/static/js/my.js"></script>
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">时间</a>
+                <a href="">时间差</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>时间差</h2>
+                    <div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-form">
+                                <input type="radio" name="time_type" value="0" title="年">
+                                <input type="radio" name="time_type" value="1" title="月">
+                                <input type="radio" name="time_type" value="2" title="日">
+                                <input type="radio" name="time_type" value="3" title="时">
+                                <input type="radio" name="time_type" value="4" title="分">
+                                <input type="radio" name="time_type" value="5" title="秒">
+                                <input type="radio" name="time_type" value="6" title="周" checked>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-group">
+                                <div class="layui-input-prefix">
+                                    开始时间
+                                </div>
+                                <input type="text" class="layui-input date" id="date_1">
+                                <div class="layui-input-suffix">
+                                    结束时间
+                                </div>
+                                <input type="text" class="layui-input date" id="date_2">
+                                <div class="layui-input-suffix">
+                                    <button class="layui-btn layui-btn-primary" id="chage_1">计算时间差</button>
+                                </div>
+                                <div class="layui-input-suffix">
+                                    <div class="layui-form-mid layui-text-em" style="color: red;" id="res_1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-group">
+                                <div class="layui-input-prefix">
+                                    时间
+                                </div>
+                                <input type="text" class="layui-input date" id="date_3">
+                                <div class="layui-input-suffix">
+                                    间隔
+                                </div>
+                                <input type="text" id="interval" placeholder="如果是之前，用负数表示" class="layui-input">
+                                <div class="layui-input-suffix">
+                                    <button class="layui-btn layui-btn-primary"  id="chage_2">计算</button>
+                                </div>
+                                <div class="layui-input-suffix">
+                                    <div class="layui-form-mid layui-text-em" id="res_2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        layui.use('form', function () {
+            var form = layui.form;
+            $ = layui.$;
+            laydate = layui.laydate;
+            layer = layui.layer;
+            // 必须填写的内容
+
+
+            // 时间戳转时间
+            $("#chage_1").click(function () {
+
+                pattern = /\d+/;
+                if (/^\s*$/.test($("#date_1").val()) || /^\s*$/.test($("#date_2").val())) {
+                    layer.alert("表单错误，<br/>请填写两个时间")
+                    return false
+                };
+
+                var value = $('input[name="time_type"]:checked').val();
+                const date1 = new Date($("#date_1").val());
+                const date2 = new Date($("#date_2").val());
+                const seconds = Math.abs((date1 - date2)) / 1000;
+                // 计算结果
+                if (value == 6) {
+                    const weeks = Math.floor(seconds / (60 * 60 * 24 * 7));
+                    const days = Math.floor((seconds % (60 * 60 * 24 * 7)) / (60 * 60 * 24));
+                    const hours = Math.floor((seconds % (60 * 60 * 24)) / (60 * 60));
+                    const minutes = Math.floor((seconds % (60 * 60)) / 60);
+                    const remainingSeconds = seconds % 60;
+                    res = `${weeks}周 ${days}天 ${hours}时 ${minutes}分 ${remainingSeconds}秒`;
+                } else if (value == 5) {
+                    res = `${seconds}秒`;
+                } else if (value == 4) {
+                    const minutes = Math.floor(seconds / 60); // 获取分钟数，向下取整
+                    const remainingSeconds = seconds % 60; // 获取剩余的秒数
+                    res = `${minutes}分${remainingSeconds}秒`;
+                } else if (value == 3) {
+                    const hours = Math.floor(seconds / 3600); // 获取小时数，向下取整
+                    const minutes = Math.floor((seconds % 3600) / 60); // 获取分钟数，向下取整
+                    const remainingSeconds = seconds % 60; // 获取剩余的秒数
+                    res = `${hours}时${minutes}分${remainingSeconds}秒`;
+                } else if (value == 2) {
+                    const days = Math.floor(seconds / 86400); // 获取天数，向下取整
+                    const remainingSeconds = seconds % 86400; // 获取剩余的秒数
+                    const hours = Math.floor(remainingSeconds / 3600); // 获取小时数，向下取整
+                    const remainingSeconds2 = remainingSeconds % 3600; // 获取剩余的秒数
+                    const minutes = Math.floor(remainingSeconds2 / 60); // 获取分钟数，向下取整
+                    const finalSeconds = remainingSeconds2 % 60; // 获取剩余的秒数
+                    res = `${days}日${hours}时${minutes}分${finalSeconds}秒`;
+                } else if (value == 1) {
+                    layer.alert("每月天数不同，无法计算差值");
+                    return false
+                } else {
+                    layer.alert("每月天数不同，无法计算差值");
+                    return false
+                }
+                $("#res_1").text(res);
+            });
+
+
+            $("#chage_2").click(function () {
+
+                pattern = /\d+/;
+                if (/^\s*$/.test($("#date_3").val()) || !pattern.test($("#interval").val())) {
+                    layer.alert("表单错误，<br/>请填写开始时间和时间间隔")
+                    return false
+                };
+
+                var value = $('input[name="time_type"]:checked').val();
+                const date_3 = new Date($("#date_3").val());
+                const interval = parseInt($("#interval").val());
+
+                // 计算结果
+                if (value == 6) {
+                    const startTime = new Date(date_3).getTime();
+                    const endTime = startTime + interval * 7 * 24 * 60 * 60 * 1000;
+                    res = format_time(endTime);
+                } else if (value == 5) {
+                    const startTime = new Date(date_3);
+                    const endTime = new Date(startTime.getTime() + interval * 1000);
+                    res = format_time(endTime);
+                } else if (value == 4) {
+                    const startTime = new Date(date_3);
+                    const endTime = new Date(startTime.getTime() + interval * 60 * 1000);
+                    res = format_time(endTime);
+                } else if (value == 3) {
+                    const startTime = new Date(date_3);
+                    const endTime = new Date(startTime.getTime() + interval * 60 * 60  * 1000);
+                    res = format_time(endTime);
+                } else if (value == 2) {
+                    const startTime = new Date(date_3);
+                    const endTime = new Date(startTime.getTime() + interval * 24 * 60 * 60  * 1000);
+                    res = format_time(endTime);
+                } else if (value == 1) {
+                    const startTime = new Date(date_3);
+                    const year = startTime.getFullYear(); // 获取当前年份
+                    const month = startTime.getMonth() + interval; // 计算未来月份
+                    const date = startTime.getDate(); // 获取当前日期
+                    const hours = startTime.getHours(); // 获取当前小时数
+                    const minutes = startTime.getMinutes(); // 获取当前分钟数
+                    const seconds = startTime.getSeconds(); // 获取当前秒数
+                    const endTime = new Date(year, month, date, hours, minutes, seconds); 
+                    res = format_time(endTime);              
+                } else {
+                    const startTime = new Date(date_3);
+                    const year = startTime.getFullYear() + interval; // 获取当前年份
+                    const month = startTime.getMonth() ; // 计算未来月份
+                    const date = startTime.getDate(); // 获取当前日期
+                    const hours = startTime.getHours(); // 获取当前小时数
+                    const minutes = startTime.getMinutes(); // 获取当前分钟数
+                    const seconds = startTime.getSeconds(); // 获取当前秒数
+                    const endTime = new Date(year, month, date, hours, minutes, seconds); 
+                    res = format_time(endTime);   
+                }
+                console.log(res)
+                $("#res_2").text(res);
+            });
+            laydate.render({
+                elem: '.date',
+                type: 'datetime',
+                fullPanel: true
+            });
+
+        });
+    </script>
+</body>
+
+</html>

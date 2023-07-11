@@ -1,0 +1,77 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>工具箱</title>
+    <link rel="stylesheet" href="/static/layui-v2.8.1/css/layui.css">
+    <script src="/static/layui-v2.8.1/layui.js"></script>
+    <link rel="stylesheet" href="/static/lib/style.css" type="text/css" media="all" />
+</head>
+
+<body>
+    {% include "/common/search_nav.html" %}
+
+    <!--  内容  -->
+    <div class="container main">
+        <div class="row">
+            <!-- 分类导航 -->
+            <span class="layui-breadcrumb" lay-separator=">">
+                <a href="/">全部</a>
+                <a href="">文档</a>
+                <a href="">pdf转图片</a>
+            </span>
+
+            <div class="col middle-column-home">
+                <div class="codelist codelist-desktop cate1">
+                    <h2><i class="fa fa-list"></i>pdf转图片</h2>
+
+                    <div class="layui-upload-drag" style="display: block;" id="upload_file">
+                        <i class="layui-icon layui-icon-upload"></i>
+                        <div>点击上传，或将文件拖拽到此处</div>
+
+                    </div>
+
+                    </br>
+                    <div>
+                        <button type="button" id="download" data-url="" class="layui-btn layui-btn-fluid">下载</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        layui.use(function () {
+            var upload = layui.upload;
+            var $ = layui.$;
+
+            $("#download").hide();
+
+            upload.render({
+                elem: '#upload_file',
+                url: '/toolkit/pdf_to_pic/upload',
+                accept: 'file',
+                exts: 'pdf',
+                before: function (obj) {
+                    layer.msg('处理中，请稍后...', { icon: 16, shade: 0.01, time: 0 });
+                },
+                done: function (res) {
+                    layer.alert(res.filename + '共生成' + res.page_number + '张图片，用时' +res.interval + '秒，<br/>请点击下方下载按钮');
+                    $("#download").text("下载" + res.zip_filename);
+                    $("#download").attr("data-url", "/toolkit/pdf_to_pic/download/" + res.zip_filename);
+                    $("#download").show();
+                }
+            });
+
+            $('#download').on('click', function () {
+                url=  $("#download").attr("data-url");
+                window.location.href = url;
+            });
+
+        });
+    </script>
+</body>
+
+</html>

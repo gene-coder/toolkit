@@ -1,0 +1,92 @@
+{
+    "1635423720196992": {
+        "soft_id": 1635423720196992,
+        "webname": "时间戳",
+        "weburl": "/toolkit/timestamp",
+        "type": "时间",
+        "remark": "时间戳与时间转换",
+        "pic": "time.jpg",
+        "file": "time.jpg"
+    },
+    "1635423870066942": {
+        "soft_id": 1635423870066942,
+        "webname": "pdf转图片",
+        "weburl": "/toolkit/pdf_to_pic",
+        "type": "文档",
+        "remark": "pdf转换成图片并下载",
+        "pic": "document.jpg",
+        "file": "pdf_to_pic"
+    },
+    "1635424090166243": {
+        "soft_id": 1635424090166243,
+        "webname": "图片转pdf",
+        "weburl": "/toolkit/pic_to_pdf",
+        "type": "文档",
+        "remark": "将图片合并到pdf中",
+        "pic": "document.jpg",
+        "file": "pic_to_pdf"
+    },
+    "1635424210032079": {
+        "soft_id": 1635424210032079,
+        "webname": "合并pdf",
+        "weburl": "/toolkit/pdf_merge",
+        "type": "文档",
+        "remark": "把pdf合并成一个",
+        "pic": "document.jpg",
+        "file": "pdf_merge"
+    },
+    "1635424307733068": {
+        "soft_id": 1635424307733068,
+        "webname": "pdf截取",
+        "weburl": "/toolkit/pdf_intercept",
+        "type": "文档",
+        "remark": "从pdf截取",
+        "pic": "document.jpg",
+        "file": "pdf_intercept"
+    },
+    "1635424473894474": {
+        "soft_id": 1635424473894474,
+        "webname": "pdf添加页码",
+        "weburl": "/toolkit/pdf_add_pagenumber",
+        "type": "文档",
+        "remark": "从pdf截取",
+        "pic": "document.jpg",
+        "file": "pdf_add_pagenumber"
+    },
+    "1635424473894475": {
+        "soft_id": 1635424473894475,
+        "webname": "时间差",
+        "weburl": "/toolkit/timediff",
+        "type": "时间",
+        "remark": "计算两个时间的时间差",
+        "pic": "time.jpg",
+        "file": "timediff"
+    },
+    "1635424473894476": {
+        "soft_id": 1635424473894476,
+        "webname": "图片裁剪",
+        "weburl": "/toolkit/pic_cropper",
+        "type": "图片",
+        "remark": "图片裁剪",
+        "pic": "image.jpg",
+        "file": "pic_cropper"
+    },
+    "1635424473894477": {
+        "soft_id": 1635424473894477,
+        "webname": "图片拼接",
+        "weburl": "/toolkit/pic_merge",
+        "type": "图片",
+        "remark": "图片拼接",
+        "pic": "image.jpg",
+        "file": "pic_merge"
+    },
+    "1635424473894478": {
+        "soft_id": 1635424473894478,
+        "webname": "图片生成签名",
+        "weburl": "/toolkit/pic_signature",
+        "type": "图片",
+        "remark": "图片拼接",
+        "pic": "image.jpg",
+        "file": "pic_merge"
+    }
+}
